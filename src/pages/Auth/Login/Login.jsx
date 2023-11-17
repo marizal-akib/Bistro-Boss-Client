@@ -1,4 +1,5 @@
-import { useContext, useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
@@ -6,18 +7,29 @@ import {
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../../providers/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 const Login = () => {
-
   const [disabled, setDisabled] = useState(true);
-
-  const { signIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+  const { signIn,createUserWithGoogle } = useContext(AuthContext);
+  console.log(location.state);
   useEffect(() => {
     loadCaptchaEnginge(6);
   }, []);
 
+  const handleGoogleLogin = () =>{
+    createUserWithGoogle()
+    .then(res=>{
+      console.log(res.user)
+      navigate(from, { replace: true })
+
+    })
+    .catch(error => console.log("error", error))
+  }
   const handValidate = (e) => {
     const value = e.target.value;
     if (validateCaptcha(value)) {
@@ -54,6 +66,7 @@ const Login = () => {
     `,
         },
       });
+      navigate(from, { replace: true });
     });
   };
 
@@ -73,6 +86,19 @@ const Login = () => {
             </p>
           </div>
           <div className="card md:w-1/2 max-w-sm shadow-2xl bg-base-100">
+          <div className="text-center mt-12">
+          <button
+                        onClick={handleGoogleLogin}
+                        className="btn text-xs font-semibold py-2 "
+                      >
+                        <span className="text-lg">
+                          <FcGoogle />
+                        </span>{" "}
+                        Google
+                      </button>
+
+          <div className="ml-16 mt-8 w-2/3 divider">OR</div>
+          </div>
             <form onSubmit={handleLogin} className="card-body">
               <div className="form-control">
                 <label className="label">
@@ -124,12 +150,12 @@ const Login = () => {
                   value="Login"
                 />
               </div>
+              <p>
+                <small>
+                  New Here? <Link to="/signup">Create an account</Link>
+                </small>
+              </p>
             </form>
-            <p>
-              <small>
-                New Here? <Link to="/signup">Create an account</Link>
-              </small>
-            </p>
           </div>
         </div>
       </div>

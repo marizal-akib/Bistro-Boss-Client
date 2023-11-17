@@ -1,9 +1,15 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { GiShoppingCart } from "react-icons/gi";
 import { AuthContext } from "../../providers/AuthProvider";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
+  const handleLogout = () => {
+    logOut()
+      .then(() => {})
+      .catch((error) => console.error(error));
+  };
   const nav = (
     <>
       <li>
@@ -15,23 +21,12 @@ const Navbar = () => {
       <li>
         <Link to="/order/salad">Order Food</Link>
       </li>
-
-      {user ? (
-        <li>
-          <button
-            onClick={logOut()
-              .then(() => {})
-              .catch((error) => console.error(error))}
-            className="btn btn-ghost"
-          >
-            Log Out
-          </button>
-        </li>
-      ) : (
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-      )}
+      <li>
+        <Link to="/"><button className="btn btn-sm text-base">
+        <GiShoppingCart />
+  <div className="badge">+0</div>
+</button></Link>
+      </li>
     </>
   );
   return (
@@ -68,7 +63,24 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1">{nav}</ul>
         </div>
         <div className="navbar-end">
-          <a className="btn">Button</a>
+          {user ? (
+            <>
+              <span>{user?.displayName}</span>
+              <button
+                onClick={handleLogout}
+                className="btn btn-outline mx-3 ml-3 border-b-4 border-orange-400 bg-slate-100"
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <Link
+              className="btn btn-outline mx-3 border-b-4 border-orange-400 bg-slate-100"
+              to="/login"
+            >
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </>

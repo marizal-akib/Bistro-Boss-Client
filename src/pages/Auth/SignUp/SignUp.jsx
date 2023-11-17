@@ -2,32 +2,51 @@ import { useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../../providers/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const SignUp = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  
   } = useForm();
+  const navigate = useNavigate();
 
-  const {createUser} = useContext(AuthContext);
+  const { createUser,updateUserProfile } = useContext(AuthContext);
 
   const onSubmit = (data) => {
     console.log(data);
-    createUser(data.email,data.password)
-    .then(result =>{
-        const loggedUser = result.user;
-        console.log(loggedUser)
-    })
+    createUser(data.email, data.password)
+    .then((result) => {
+      const loggedUser = result.user;
+      console.log(loggedUser);
+      updateUserProfile(data.name, data.photo)
+      .then(()=>{
+        console.log('Updated');
+        reset
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "User has been created",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          navigate('/')
+          
+      })
+      .catch(error=>console.error(error))
+
+
+    });
   };
 
   return (
     <>
-    <Helmet>
+      <Helmet>
         <title>Bistro Boss | Sign Up</title>
-    </Helmet>
+      </Helmet>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col lg:flex-row">
           <div className="text-center lg:text-left">
@@ -52,7 +71,7 @@ const SignUp = () => {
                 />
                 {errors.name && (
                   <span className="mt-2 text-red-600 font-semibold text-xs">
-                    This field is required
+                    Name field is required
                   </span>
                 )}
               </div>
@@ -109,6 +128,22 @@ const SignUp = () => {
                     lowercase letter, one number, one special character.
                   </span>
                 )}
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Photo URL</span>
+                </label>
+                <input
+                  {...register("photo", { required: true })}
+                  type="photo"
+                  placeholder="photo URL"
+                  className="input input-bordered"
+                />
+                {errors.photo && (
+                  <span className="mt-2 text-red-600 font-semibold text-xs">
+                    Photo URL field is required
+                  </span>
+                )}
                 <label className="label">
                   <a href="#" className="label-text-alt link link-hover">
                     Forgot password?
@@ -123,12 +158,13 @@ const SignUp = () => {
                 />
                 <button></button>
               </div>
+              <p>
+                <small>
+                  Already Have An Account?{" "}
+                  <Link to="/login">Please Login.</Link>
+                </small>
+              </p>
             </form>
-            <p>
-              <small>
-                Already Have An Account? <Link to="/login">Please Login.</Link>
-              </small>
-            </p>
           </div>
         </div>
       </div>
