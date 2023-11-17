@@ -2,9 +2,11 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { GiShoppingCart } from "react-icons/gi";
 import { AuthContext } from "../../providers/AuthProvider";
+import useCart from "../../hooks/useCart";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
+  const [cart] = useCart()
   const handleLogout = () => {
     logOut()
       .then(() => {})
@@ -24,7 +26,7 @@ const Navbar = () => {
       <li>
         <Link to="/"><button className="btn btn-sm text-base">
         <GiShoppingCart />
-  <div className="badge">+0</div>
+  <div className="badge">+{cart.length}</div>
 </button></Link>
       </li>
     </>
