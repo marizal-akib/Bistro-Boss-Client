@@ -5,6 +5,7 @@ import { AuthContext } from "../../../providers/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../../../hooks/useAxiosPublic";
+import SocialLogin from "../../../Components/SocialLogin/SocialLogin";
 
 const SignUp = () => {
   const axiosPublic = useAxiosPublic();
@@ -16,42 +17,36 @@ const SignUp = () => {
   } = useForm();
   const navigate = useNavigate();
 
-  const { createUser,updateUserProfile } = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
 
   const onSubmit = (data) => {
     console.log(data);
-    createUser(data.email, data.password)
-    .then((result) => {
+    createUser(data.email, data.password).then((result) => {
       const loggedUser = result.user;
       console.log(loggedUser);
       updateUserProfile(data.name, data.photo)
-      .then(()=>{
-        console.log('Updated');
-        const userInfo = {
-          name:data.name,
-          email:data.email
-        }
-        axiosPublic.post('/users', userInfo)
-        .then(res =>{
-          if (res.data.insertedId){
-            console.log("user added to the database");
-            reset();
-            Swal.fire({
+        .then(() => {
+          console.log("Updated");
+          const userInfo = {
+            name: data.name,
+            email: data.email,
+          };
+          axiosPublic.post("/users", userInfo).then((res) => {
+            if (res.data.insertedId) {
+              console.log("user added to the database");
+              reset();
+              Swal.fire({
                 position: "top-end",
                 icon: "success",
                 title: "User has been created",
                 showConfirmButton: false,
-                timer: 1500
+                timer: 1500,
               });
-              navigate('/')
-            
-          }
+              navigate("/");
+            }
+          });
         })
-          
-      })
-      .catch(error=>console.error(error))
-
-
+        .catch((error) => console.error(error));
     });
   };
 
@@ -171,7 +166,11 @@ const SignUp = () => {
                 />
                 <button></button>
               </div>
-              <p>
+              <div className="text-center">
+                <div className="ml-12  w-2/3 divider">OR</div>
+                <SocialLogin></SocialLogin>
+              </div>
+              <p className="mt-8"> 
                 <small>
                   Already Have An Account?{" "}
                   <Link to="/login">Please Login.</Link>
