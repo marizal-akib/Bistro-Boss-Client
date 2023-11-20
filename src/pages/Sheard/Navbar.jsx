@@ -24,7 +24,7 @@ const Navbar = () => {
         <Link to="/order/salad">Order Food</Link>
       </li>
       <li>
-        <Link to="/"><button className="btn btn-sm text-base">
+        <Link to="/dashboard/cart"><button className="btn btn-sm text-base">
         <GiShoppingCart />
   <div className="badge">+{cart.length}</div>
 </button></Link>
