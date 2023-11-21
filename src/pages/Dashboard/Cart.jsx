@@ -1,4 +1,4 @@
-import { GiShoppingBag, GiTrashCan } from "react-icons/gi";
+import { GiTrashCan } from "react-icons/gi";
 import useCart from "../../hooks/useCart";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
