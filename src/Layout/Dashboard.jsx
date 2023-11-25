@@ -10,6 +10,7 @@ import {
   GiRead,
   GiShoppingBag,
   GiShoppingCart,
+  GiWallet,
 } from "react-icons/gi";
 import { FaList, FaUsers } from "react-icons/fa";
   import { NavLink, Outlet } from "react-router-dom";
@@ -29,7 +30,7 @@ const Dashboard = () => {
           {isAdmin ? (
             <>
               <li>
-                <NavLink to="/dashboard/userHome">
+                <NavLink to="/dashboard/adminHome">
                   <GiHouse></GiHouse> Admin Home
                 </NavLink>
               </li>
@@ -54,7 +55,18 @@ const Dashboard = () => {
                   <FaUsers></FaUsers> All Users
                 </NavLink>
               </li>
-             
+              <div className="divider"></div>
+              <li>
+                <NavLink to="/dashboard/cart">
+                  <GiShoppingCart></GiShoppingCart> My Cart{" "}
+                  <div className="badge badge-secondary">{cart.length}</div>{" "}
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard/paymentHistory">
+                  <GiWallet></GiWallet> Payment History
+                </NavLink>
+              </li>
             </>
           ) : (
             <>
@@ -80,8 +92,8 @@ const Dashboard = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard/review">
-                  <GiBookmarklet></GiBookmarklet> My Bookings
+                <NavLink to="/dashboard/paymentHistory">
+                  <GiWallet></GiWallet> Payment History
                 </NavLink>
               </li>
             </>

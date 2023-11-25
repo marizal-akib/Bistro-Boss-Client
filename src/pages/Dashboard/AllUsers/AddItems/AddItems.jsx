@@ -1,11 +1,51 @@
 import { useForm } from "react-hook-form";
 import SectionTitle from "../../../../Components/SectionTitle";
 import { FaUtensils } from "react-icons/fa";
+import useAxiosPublic from "../../../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
+
+const image_hosting_key =import.meta.env.VITE_IMAGE_HOSTING_KEY;
+const image_hosting_api =`https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+
 
 const AddItems = () => {
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => {
+  const { register, handleSubmit, reset } = useForm();
+  const axiosPublic = useAxiosPublic();
+  const axiosSecure = useAxiosSecure();
+  const onSubmit = async (data) => {
     console.log(data);
+    const imageFile = {image: data.image[0] }
+    const res = await axiosPublic.post(image_hosting_api,imageFile, {
+       
+       headers:{
+         'content-type': 'multipart/form-data'
+        },
+        
+    });
+    if(res.data.success){
+        const menuItem = {
+            name: data.name,
+            category: (data.category).toLowerCase(),
+            price: parseFloat(data.price),
+            recipe: data.recipe,
+            image: res.data.data.display_url
+        }
+        const menuRes = await axiosSecure.post('/menu', menuItem);
+        console.log(menuRes.data);
+        if (menuRes.data.insertedId) {
+            reset()
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: `${data.name} is added to the menu`,
+                showConfirmButton: false,
+                timer: 1500
+              });
+
+        }
+    }
+    console.log(res.data);
   };
   return (
     <div>
@@ -13,10 +53,11 @@ const AddItems = () => {
         heading="add an item"
         subHeading="--- What's new? ---"
       ></SectionTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="p-6 bg-slate-200 w-4/5 mx-auto mb-9">
+     <form onSubmit={handleSubmit(onSubmit)}>
         <div className="form-control w-full my-6">
           <label className="label">
-            <span className="label-text">Recipe Name*</span>
+            <span className="label-text font-bold">Recipe Name*</span>
           </label>
           <input
             type="text"
@@ -30,14 +71,15 @@ const AddItems = () => {
           {/* category */}
           <div className="form-control w-full my-6">
             <label className="label">
-              <span className="label-text">Category Name*</span>
+              <span className="label-text font-bold">Category Name*</span>
             </label>
             <select
               {...register("category")}
               required
+              defaultValue="def"
               className="select select-bordered w-full "
             >
-              <option disabled selected>
+              <option  disabled value="def">
                 Select a Category
               </option>
               <option>Salad</option>
@@ -50,7 +92,7 @@ const AddItems = () => {
           {/* price */}
           <div className="form-control w-full my-6">
             <label className="label">
-              <span className="label-text">Price*</span>
+              <span className="label-text font-bold">Price*</span>
             </label>
             <input
               type="text"
@@ -64,7 +106,7 @@ const AddItems = () => {
           {/* details */}
         <div className="form-control">
           <label className="label">
-            <span className="label-text">Recipe Details</span>
+            <span className="label-text font-bold">Recipe Details</span>
           </label>
           <textarea
           {...register("recipe")}
@@ -77,11 +119,13 @@ const AddItems = () => {
         <input {...register("image")} required type="file" className="file-input w-full max-w-xs" />
         </div>
 
-        <button className="btn">
+        <button className="btn text-white bg-gradient-to-r rounded-none from-orange-800 from-10% via-orange-700 via-30% to-orange-500 to-90% ...">
             Add Item <FaUtensils className="ml-4"></FaUtensils>
         </button>
 
-      </form>
+      </form>   
+      </div>
+      
     </div>
   );
 };
